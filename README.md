@@ -1,6 +1,8 @@
 # lecroy_WR620ZI
 python interface for the lecroy WR620ZI
 
+- enables automation of basic waveform capture and built-in measurement functions
+- communicates via VXI11 interface over LAN
 
 
 ## Dependencies
@@ -32,9 +34,12 @@ import WR620ZI as lecroy
 ##################################################
 
 #lecroy.clear_all()
+
+# set horizontal scaling, time/div
 tdiv=50e-9
 lecroy.set_tdiv(tdiv)
-#lecroy.set_trigger_delay(-4*tdiv) # t0 = 10% of screen
+
+lecroy.set_trigger_delay(-4*tdiv) # t0 = 10% of screen
 
 # access scope channels by labels,
 # for easy re-mapping of scope channels without
