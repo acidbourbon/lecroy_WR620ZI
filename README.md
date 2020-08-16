@@ -1,23 +1,30 @@
 # lecroy_WR620ZI
-python interface for the lecroy WR620ZI
+python3 interface for the Lecroy WaveSurfer WR620ZI digital storage oscilloscope
 
 - enables automation of basic waveform capture and built-in measurement functions
 - communicates via VXI11 interface over LAN
+- captured data is compatible with numpy and matplotlib
+- tested on Linux ... *might* work on Windows, too
+- works great in combination with jupyter notebooks!!!
 
 
 ## Dependencies
 - python3
 - numpy
 - python-vxi11
+- matplotlib
 
 
 ```
 sudo apt-get update
-sudo apt-get install python3-pip python3-numpy
+sudo apt-get install python3-pip python3-numpy python3-matplotlib
 sudo pip3 install update
 sudo pip3 install setuptools
 sudo pip3 install python-vxi11
 ```
+
+Warning: in the current state, the IP of the scope is hardcoded in WR620ZI.py.
+Fill fix that asap ...
 
 ## Example usage
 
