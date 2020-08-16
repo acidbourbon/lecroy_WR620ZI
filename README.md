@@ -36,7 +36,9 @@ tdiv=50e-9
 lecroy.set_tdiv(tdiv)
 #lecroy.set_trigger_delay(-4*tdiv) # t0 = 10% of screen
 
-# access scope sources by labels
+# access scope channels by labels,
+# for easy re-mapping of scope channels without
+# touching your below measurement automation
 s = {
     "DUT_IN"   :"C4", 
     "DUT_OUT"  :"C2"  
@@ -48,5 +50,25 @@ m = {
     "DUT_OUT_TOT"  : "p2"
 }
 
+##################################################
+##              capture waveforms               ##
+##################################################
+
+time, wfm = lecroy.capture_waveforms([
+    s["DUT_IN"],
+    s["DUT_OUT"]
+  ],
+    average=10
+)
+
+plt.plot(time, wfm[s["DUT_IN"]], "r" ,label="DUT_IN")
+plt.plot(time, wfm[s["DUT_OUT"]],"g" ,label="DUT_OUT")
+plt.legend()
+plt.xlabel("time (s)")
+plt.ylabel("voltage (V)")
+show(plt)
+
 
 ```
+
+README UNDER CONSTRUCTION
