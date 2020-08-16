@@ -51,9 +51,15 @@ s = {
 
 # access scope measurements by labels
 m = {
-    "DUT_OUT_T1"   : "p1",
-    "DUT_OUT_TOT"  : "p2"
+    "DUT_OUT_RISE"   : "p1",
+    "DUT_OUT_FALL"   : "p2",
+    "DUT_OUT_WIDTH"   : "p3"
 }
+
+# set up measurements for rise time, fall time and pulse width
+lecroy.setup_measurement(m["DUT_OUT_FALL"],  s["DUT_OUT"], "rise")
+lecroy.setup_measurement(m["DUT_OUT_RISE"],  s["DUT_OUT"], "fall")
+lecroy.setup_measurement(m["DUT_OUT_WIDTH"], s["DUT_OUT"], "width")
 
 ##################################################
 ##              capture waveforms               ##
@@ -71,9 +77,35 @@ plt.plot(time, wfm[s["DUT_OUT"]],"g" ,label="DUT_OUT")
 plt.legend()
 plt.xlabel("time (s)")
 plt.ylabel("voltage (V)")
-show(plt)
-
+plt.show()
 
 ```
 
-README UNDER CONSTRUCTION
+![Photo](https://github.com/acidbourbon/lecroy_WR620ZI/blob/master/pics/waveforms.png)
+
+
+```python
+##################################################
+##          use built-in measurements           ##
+##################################################
+
+n_samples = 100
+
+vals = lecroy.measure_statistics([m["DUT_OUT_RISE"],m["DUT_OUT_FALL"]],n_samples)
+
+## calculate some simple statistics
+rise_mean = np.mean(vals[m["DUT_OUT_RISE"]])
+rise_std  = np.std(vals[m["DUT_OUT_RISE"]])
+
+## plot recorded data as histogram
+plt.hist(vals[m["DUT_OUT_RISE"]], label="mean = {:3.2e}s\nstd = {:3.2e}s".format(rise_mean,rise_std)) 
+#plt.hist(vals[m["DUT_OUT_RISE"]], bins = np.arange(0,5,0.05))
+plt.title("rise time distribution") 
+plt.xlabel("time (s)")
+plt.ylabel("counts")
+plt.legend()
+plt.show()
+
+```
+
+![Photo](https://github.com/acidbourbon/lecroy_WR620ZI/blob/master/pics/meas_hist.png)
