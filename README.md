@@ -23,9 +23,6 @@ sudo pip3 install setuptools
 sudo pip3 install python-vxi11
 ```
 
-Warning: in the current state, the IP of the scope is hardcoded in WR620ZI.py.
-Fill fix that asap ...
-
 ## Example usage
 
 
@@ -118,7 +115,4 @@ plt.show()
 
 ```
 
-<<<<<<< HEAD
-=======
 ![Photo](https://github.com/acidbourbon/lecroy_WR620ZI/blob/master/pics/meas_hist.png)
->>>>>>> a823da164e9301fa2ca0cc5d95a9a2aac3cd93e4
