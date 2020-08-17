@@ -28,6 +28,9 @@ from matplotlib import pyplot as plt
 
 import WR620ZI as lecroy
 
+# change IP to your scope LAN address
+# make sure that LXI interface is enabled in the scope remote settings!
+lecroy.init("192.168.43.20")
 
 ##################################################
 ##           configure LeCroy Scope             ##
@@ -76,4 +79,3 @@ show(plt)
 
 ```
 
-README UNDER CONSTRUCTION

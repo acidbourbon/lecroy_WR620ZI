@@ -20,17 +20,35 @@ import vxi11
 
 #lecroy = rm.open_resource('TCPIP0::192.168.43.20::INSTR') ## if you use this, set lofirst to False
 
-lecroy = vxi11.Instrument('TCPIP0::192.168.43.20::INSTR')
 
+#debugging stuff, too lazy to clean up
 ovrride_lofirst = False ## needed if you use lxi
 ovrride_lofirst_val = False ## needed if you use lxi
 
-lecroy.timeout = 2000
-lecroy.clear()
-lecroy.chunk_size = 102400
 
 
-print(lecroy.ask("*IDN?"))
+local_objects = {}
+
+def init(ip):
+  lecroy = vxi11.Instrument('TCPIP0::{}::INSTR'.format(ip))
+
+
+  lecroy.timeout = 2000
+  lecroy.clear()
+  lecroy.chunk_size = 102400
+  local_objects["lecroy"] = lecroy
+  
+  print("*IDN?")
+  idn_str =lecroy.ask("*IDN?")
+  print(idn_str)
+  if( "LECROY,WR620ZI" in idn_str):
+    print("successfully connected to Lecroy scope!")
+  else:
+    raise NameError("could not connect to desired device")
+  
+  return 1
+
+
 
 
 def prefix_number(number):
@@ -79,11 +97,19 @@ def next_bigger_125_number(x):
 
 
 def clear_all():
+  if (not("lecroy" in local_objects.keys())):
+    raise NameError("there is no running communication session with oscilloscope!\nrun init() first!")
+  lecroy = local_objects["lecroy"]
+  
   lecroy.write(r"""vbs 'app.measure.clearall ' """)
   lecroy.write(r"""vbs 'app.measure.clearsweeps ' """)
 
 
 def setup_measurement(meas_no,meas_source,meas_type):
+  if (not("lecroy" in local_objects.keys())):
+    raise NameError("there is no running communication session with oscilloscope!\nrun init() first!")
+  lecroy = local_objects["lecroy"]
+  
   lecroy.write(r"""vbs 'app.measure.showmeasure = true ' """)
   lecroy.write(r"""vbs 'app.measure.statson = true ' """)
   lecroy.write(r"""vbs 'app.measure."""+meas_no+r""".view = true ' """)
@@ -96,6 +122,10 @@ def setup_measurement(meas_no,meas_source,meas_type):
 
 
 def measure_statistics(sources, n):
+  if (not("lecroy" in local_objects.keys())):
+    raise NameError("there is no running communication session with oscilloscope!\nrun init() first!")
+  lecroy = local_objects["lecroy"]
+  
   first =  True
   
   return_dict = {}
@@ -119,6 +149,10 @@ def measure_statistics(sources, n):
   return return_dict
 
 def read_measure(source): # p1 p2 ...
+  if (not("lecroy" in local_objects.keys())):
+    raise NameError("there is no running communication session with oscilloscope!\nrun init() first!")
+  lecroy = local_objects["lecroy"]
+  
   answer = lecroy.ask(r"""vbs? 'return=app.measure.""" +source.lower() + r""".out.result.value' """)
   if 'No Data Available' in answer:
     return np.nan
@@ -126,6 +160,10 @@ def read_measure(source): # p1 p2 ...
     return float(answer)
 
 def trigger_n_times(n,**kwargs):
+  if (not("lecroy" in local_objects.keys())):
+    raise NameError("there is no running communication session with oscilloscope!\nrun init() first!")
+  lecroy = local_objects["lecroy"]
+  
   clear_sweeps = kwargs.get("clear_sweeps",True)
   # stop acquisition
   lecroy.write(r"""vbs 'app.acquisition.triggermode = "stopped" ' """)
@@ -143,21 +181,45 @@ def trigger_n_times(n,**kwargs):
       print ("Time out from WaitUntilIdle, return = {0}".format(r))
       
 def set_tdiv(tdiv):      
+  if (not("lecroy" in local_objects.keys())):
+    raise NameError("there is no running communication session with oscilloscope!\nrun init() first!")
+  lecroy = local_objects["lecroy"]
+  
   lecroy.write("TDIV {:e}".format(tdiv))
 
 def set_trigger_delay(trdl):
+  if (not("lecroy" in local_objects.keys())):
+    raise NameError("there is no running communication session with oscilloscope!\nrun init() first!")
+  lecroy = local_objects["lecroy"]
+  
   lecroy.write("TRDL {:e}".format(trdl))
   
 def set_vdiv(source,vdiv):
+  if (not("lecroy" in local_objects.keys())):
+    raise NameError("there is no running communication session with oscilloscope!\nrun init() first!")
+  lecroy = local_objects["lecroy"]
+  
   lecroy.write("{:s}:VDIV {:e}".format(source,vdiv))
   
 def set_voffset(source,offset):
+  if (not("lecroy" in local_objects.keys())):
+    raise NameError("there is no running communication session with oscilloscope!\nrun init() first!")
+  lecroy = local_objects["lecroy"]
+  
   lecroy.write("{:s}:OFFSET {:e}".format(source,offset))
   
 def set_trig_source(source):
+  if (not("lecroy" in local_objects.keys())):
+    raise NameError("there is no running communication session with oscilloscope!\nrun init() first!")
+  lecroy = local_objects["lecroy"]
+  
   lecroy.write("TRIG_SELECT edge,SR,{:s} ".format(source))
 
 def capture_waveforms(sources,**kwargs):
+  
+  if (not("lecroy" in local_objects.keys())):
+    raise NameError("there is no running communication session with oscilloscope!\nrun init() first!")
+  lecroy = local_objects["lecroy"]
   
   
   average = kwargs.get("average",1)
@@ -206,6 +268,10 @@ def capture_waveforms(sources,**kwargs):
 
 
 def transfer_waveform(source,**kwargs):
+  if (not("lecroy" in local_objects.keys())):
+    raise NameError("there is no running communication session with oscilloscope!\nrun init() first!")
+  lecroy = local_objects["lecroy"]
+  
   
   # example: acquire_waveform("C1")
   
@@ -285,8 +351,12 @@ def transfer_waveform(source,**kwargs):
 
 ## called if module is terminated
 def __del__(self):
+  if (not("lecroy" in local_objects.keys())):
+    raise NameError("there is no running communication session with oscilloscope!\nrun init() first!")
+  lecroy = local_objects["lecroy"]
+  
   print("goodbye lecroy scope")
   lecroy.close()
-  rm.close()
+  #rm.close()
 
 
