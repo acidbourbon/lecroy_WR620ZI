@@ -41,7 +41,7 @@ def init(ip):
   print("*IDN?")
   idn_str =lecroy.ask("*IDN?")
   print(idn_str)
-  if( "LECROY,WR620ZI" in idn_str):
+  if( ("LECROY,WR620ZI" in idn_str) or ("LECROY,WP254HD" in idn_str)):
     print("successfully connected to Lecroy scope!")
   else:
     raise NameError("could not connect to desired device")

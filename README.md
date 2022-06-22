@@ -1,5 +1,6 @@
 # lecroy_WR620ZI
 python3 interface for the Lecroy WaveSurfer WR620ZI digital storage oscilloscope
+(seems to work just fine with the newer Lecroy WP254HD)
 
 - enables automation of basic waveform capture and built-in measurement functions
 - communicates via VXI11 interface over LAN
